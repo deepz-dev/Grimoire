@@ -9,7 +9,7 @@ LeetCode 169: Majority Element
 ## 🏷️ Tags
 
 - Array
-- Sorting
+- Boyer-Moore Voting Algorithm
 
 ---
 
@@ -63,18 +63,107 @@ nums = [2,2,1,1,1,2,2]
 
 ---
 
-## 🚀 Approach
+## 🚀 Optimal Approach (Boyer-Moore Voting Algorithm)
 
-Since the majority element appears **more than half of the array size**, it will always occupy the middle position after sorting.
+Use the **Boyer-Moore Voting Algorithm**.
 
-1. Sort the array.
-2. Return the element at index `n / 2`.
+### Intuition
 
-Because the majority element occurs more than `⌊n/2⌋` times, it is guaranteed to be the middle element in the sorted array.
+Since the majority element appears **more than half of the time**, every occurrence of a different element can cancel out one occurrence of the majority element.
+
+Eventually, only the majority element remains as the candidate.
+
+### Steps
+
+1. Initialize:
+   - `candidate = nums[0]`
+   - `count = 0`
+2. Traverse the array.
+3. If `count == 0`, choose the current element as the new candidate.
+4. If the current element equals the candidate, increment `count`.
+5. Otherwise, decrement `count`.
+6. After one traversal, the candidate is the majority element.
+
+Since the problem guarantees that a majority element always exists, no second verification pass is required.
 
 ---
 
 ## 💻 Java Solution
+
+```java
+class Solution {
+
+    public int majorityElement(int[] nums) {
+
+        int candidate = nums[0];
+        int count = 0;
+
+        for (int num : nums) {
+
+            if (count == 0) {
+                candidate = num;
+            }
+
+            if (num == candidate) {
+                count++;
+            } else {
+                count--;
+            }
+        }
+
+        return candidate;
+    }
+}
+```
+
+---
+
+## ⏱️ Complexity Analysis
+
+**Time Complexity:** `O(n)`
+
+- The array is traversed exactly once.
+
+**Space Complexity:** `O(1)`
+
+- Only two extra variables are used.
+
+---
+
+## 🔒 Constraints
+
+- `1 ≤ nums.length ≤ 5 × 10⁴`
+- `-10⁹ ≤ nums[i] ≤ 10⁹`
+- The majority element always exists.
+
+---
+
+## 🌟 Key Points
+
+- Uses the Boyer-Moore Voting Algorithm.
+- Completes in a single traversal.
+- Uses constant extra space.
+- Does not require sorting or a HashMap.
+- This is the optimal solution.
+
+---
+
+## ⭐ Alternative Solution (Sorting)
+
+Another simple approach is sorting.
+
+### Idea
+
+Since the majority element appears more than `⌊n/2⌋` times, it will always occupy the middle position after sorting.
+
+### Steps
+
+1. Sort the array.
+2. Return `nums[n / 2]`.
+
+---
+
+### 💻 Java Solution
 
 ```java
 class Solution {
@@ -90,7 +179,7 @@ class Solution {
 
 ---
 
-## ⏱️ Complexity Analysis
+### ⏱️ Complexity Analysis
 
 **Time Complexity:** `O(n log n)`
 
@@ -102,25 +191,31 @@ class Solution {
 
 ---
 
-## 🔒 Constraints
+### 🌟 Key Points
 
-- `1 ≤ nums.length ≤ 5 × 10⁴`
-- `-10⁹ ≤ nums[i] ≤ 10⁹`
-- The majority element always exists.
-
----
-
-## 🌟 Key Points
-
-- Uses sorting to identify the majority element.
-- The majority element always occupies the middle index after sorting.
-- Simple and easy to understand.
-- No frequency counting is required.
+- Very easy to understand.
+- Relies on sorting.
+- Does not satisfy the optimal time complexity.
+- Good for beginners, but not preferred in interviews.
 
 ---
 
 ## ⚠️ Common Mistakes
 
-- Forgetting that this approach relies on the guarantee that a majority element always exists.
-- Returning the first or last element after sorting instead of the middle element.
-- Assuming this approach works for problems where no majority element is guaranteed.
+- Forgetting to reset the candidate when `count` becomes `0`.
+- Incrementing and decrementing `count` incorrectly.
+- Assuming Boyer-Moore works when a majority element is **not guaranteed**.
+  - In such cases, a second verification pass is required.
+- Using sorting (`O(n log n)`) when the interviewer expects the optimal `O(n)` solution.
+
+---
+
+## 💡 Why Does Boyer-Moore Work?
+
+Think of the majority element as having extra "votes."
+
+Every time we encounter a different element, it cancels one vote of the current candidate.
+
+Since the majority element appears **more than half of the array**, it can never be completely canceled out.
+
+Therefore, after all cancellations, the remaining candidate must be the majority element.
