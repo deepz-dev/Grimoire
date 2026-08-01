@@ -1,4 +1,4 @@
-# 🔢 Best Time to Buy and Sell Stock
+# 📈 Best Time to Buy and Sell Stock
 
 ## 🔗 Problem Link
 
@@ -21,16 +21,13 @@ Easy
 
 ## Problem Statement
 
-You are given an array `prices` where `prices[i]` is the price of a stock on the `iᵗʰ` day.
+You are given an array `prices` where `prices[i]` represents the stock price on the `iᵗʰ` day.
 
-You want to maximize your profit by choosing:
+You may choose **one day to buy** one stock and **one later day to sell** that stock.
 
-- One day to **buy** the stock.
-- A later day to **sell** the stock.
+Return the **maximum profit** possible.
 
-Return the **maximum profit** you can achieve.
-
-If no profit is possible, return `0`.
+If no profit can be made, return `0`.
 
 ---
 
@@ -52,13 +49,12 @@ prices = [7,1,5,3,6,4]
 
 **Explanation**
 
-- Buy on day 2 at price `1`.
-- Sell on day 5 at price `6`.
-
-Profit:
-
 ```text
-6 - 1 = 5
+Buy at price = 1
+
+Sell at price = 6
+
+Profit = 6 - 1 = 5
 ```
 
 ---
@@ -79,28 +75,34 @@ prices = [7,6,4,3,1]
 
 **Explanation**
 
-The stock price keeps decreasing.
+```text
+Prices keep decreasing.
 
-No profit can be made.
+No profitable transaction is possible.
+```
 
 ---
 
-## 🚀 Optimal Approach (Greedy)
+# 🚀 Solution 1 — Track Minimum Price
 
-Traverse the array only once.
+## Idea
 
-Maintain two variables:
+Traverse the array once.
 
-- `buy` → Lowest stock price seen so far.
-- `profit` → Maximum profit obtained so far.
+Keep track of:
 
-For every price:
+- Lowest buying price seen so far.
+- Maximum profit obtained so far.
 
-- If the current price is smaller than `buy`, update `buy`.
-- Otherwise, calculate the profit if we sell today.
-- Update `profit` whenever a larger profit is found.
+Whenever a smaller price is found,
 
-Since we always buy at the lowest price seen before the current day, every possible valid transaction is considered.
+update the buying price.
+
+Otherwise,
+
+calculate the profit if sold today.
+
+Update the answer if it is larger.
 
 ---
 
@@ -117,11 +119,10 @@ class Solution {
         for (int i = 1; i < prices.length; i++) {
 
             if (prices[i] < buy) {
-
                 buy = prices[i];
+            }
 
-            } else if (prices[i] - buy > profit) {
-
+            else if (prices[i] - buy > profit) {
                 profit = prices[i] - buy;
             }
         }
@@ -133,62 +134,102 @@ class Solution {
 
 ---
 
-## ⏱️ Complexity Analysis
+## Dry Run
 
-**Time Complexity:** `O(n)`
+Input
 
-- The array is traversed exactly once.
+```text
+prices = [7,1,5,3,6,4]
+```
 
-**Space Complexity:** `O(1)`
+| Day | Price | Buy | Profit |
+|----:|------:|----:|-------:|
+|1|7|7|0|
+|2|1|1|0|
+|3|5|1|4|
+|4|3|1|4|
+|5|6|1|5|
+|6|4|1|5|
 
-- Only two extra variables are used.
+Answer
 
----
-
-## 🔒 Constraints
-
-- `1 ≤ prices.length ≤ 10⁵`
-- `0 ≤ prices[i] ≤ 10⁴`
-
----
-
-## 🌟 Key Points
-
-- Uses a Greedy approach.
-- Maintains the minimum buying price seen so far.
-- Updates the maximum profit while traversing.
-- Traverses the array only once.
-- Uses constant extra space.
-- This is the optimal solution.
+```text
+5
+```
 
 ---
 
-## ⭐ Alternative Solution (Brute Force)
+# 🚀 Solution 2 — Math.min() and Math.max()
 
-Try every possible pair of buy and sell days.
+This is the same greedy algorithm written more compactly.
 
-For every day:
+Instead of using `if-else`, use:
 
-- Buy on day `i`.
-- Sell on every later day `j`.
-- Keep track of the maximum profit.
+- `Math.min()` to update the minimum buying price.
+- `Math.max()` to update the maximum profit.
 
 ---
 
-### 💻 Java Solution
+## 💻 Java Solution
 
 ```java
 class Solution {
 
     public int maxProfit(int[] prices) {
 
+        int min = prices[0];
         int profit = 0;
 
-        for (int i = 0; i < prices.length; i++) {
+        for (int i = 1; i < prices.length; i++) {
 
-            for (int j = i + 1; j < prices.length; j++) {
+            int cost = prices[i] - min;
 
-                profit = Math.max(profit, prices[j] - prices[i]);
+            profit = Math.max(profit, cost);
+
+            min = Math.min(min, prices[i]);
+        }
+
+        return profit;
+    }
+}
+```
+
+---
+
+# 🚀 Solution 3 — Enhanced Greedy (Most Compact)
+
+Instead of initializing with the first element,
+
+start with the largest possible buying price.
+
+Whenever a smaller price appears,
+
+update the buying price.
+
+Otherwise,
+
+directly compute the best profit.
+
+---
+
+## 💻 Java Solution
+
+```java
+class Solution {
+
+    public int maxProfit(int[] prices) {
+
+        int buy = Integer.MAX_VALUE;
+        int profit = 0;
+
+        for (int price : prices) {
+
+            if (price < buy) {
+                buy = price;
+            }
+
+            else {
+                profit = Math.max(profit, price - buy);
             }
         }
 
@@ -199,67 +240,108 @@ class Solution {
 
 ---
 
-### ⏱️ Complexity Analysis
+# ⭐ Optimal Solution
 
-**Time Complexity:** `O(n²)`
+**Solution 3** is generally preferred.
 
-- Every pair of buy and sell days is checked.
+Reason:
+
+- No special handling for the first element.
+- Cleaner initialization.
+- Works directly using enhanced for-loop.
+- Most concise implementation.
+- Same greedy idea as the other two solutions.
+
+All three solutions implement **exactly the same algorithm**.
+
+Only the coding style is different.
+
+---
+
+## 🧠 Greedy Intuition
+
+At every step,
+
+we ask two questions.
+
+```text
+1. Is today's price the cheapest so far?
+
+YES
+
+→ Update buying price.
+```
+
+Otherwise,
+
+```text
+2. If I sell today,
+
+will I earn more profit than before?
+
+YES
+
+→ Update maximum profit.
+```
+
+Repeat until the array ends.
+
+---
+
+## ⏱️ Complexity Analysis
+
+**Time Complexity:** `O(n)`
+
+- Traverse the array once.
 
 **Space Complexity:** `O(1)`
 
----
-
-### 🌟 Key Points
-
-- Easy to understand.
-- Checks every possible transaction.
-- Too slow for large inputs.
-- Not suitable for interviews.
+- Only two variables are maintained.
 
 ---
 
-## 💡 Why Does the Greedy Approach Work?
+## 🌟 Key Points
 
-The profit depends on two values:
-
-```text
-Selling Price - Buying Price
-```
-
-To maximize the profit:
-
-- We should always buy at the **lowest price seen so far**.
-- For every day, we check whether selling today gives a better profit than any previous transaction.
-
-Example:
-
-```text
-prices = [7,1,5,3,6,4]
-```
-
-| Day | Price | Buy | Profit |
-|-----|------:|----:|-------:|
-|1|7|7|0|
-|2|1|1|0|
-|3|5|1|4|
-|4|3|1|4|
-|5|6|1|5|
-|6|4|1|5|
-
-Final Answer
-
-```text
-5
-```
-
-Since every price is compared with the minimum price before it, no profitable transaction is missed.
+- Greedy Algorithm.
+- Track the minimum buying price.
+- Update profit whenever a better selling price is found.
+- Only one traversal.
+- No extra space.
+- Optimal solution.
 
 ---
 
 ## ⚠️ Common Mistakes
 
-- Updating the profit before updating the minimum buying price.
-- Buying after selling (the buy day must come before the sell day).
-- Returning a negative profit instead of `0`.
-- Initializing `buy` with `0` instead of the first day's price.
-- Using the brute-force solution (`O(n²)`) when an `O(n)` solution is expected.
+- Selling before buying.
+- Updating profit before updating the minimum price.
+- Using nested loops (`O(n²)`).
+- Forgetting to return `0` when no profit is possible.
+
+---
+
+## 🎯 Interview Tip
+
+Whenever you see:
+
+```text
+Buy once
+
+Sell once
+
+Maximum Profit
+```
+
+Think immediately of:
+
+```text
+Greedy
+
+Maintain Minimum Price
+
+Maintain Maximum Profit
+```
+
+Never use nested loops.
+
+The greedy approach solves it in linear time.
