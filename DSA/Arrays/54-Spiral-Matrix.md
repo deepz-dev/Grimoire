@@ -1,8 +1,10 @@
 # 🌀 Spiral Matrix
 
-## 🔗 Problem Link : https://leetcode.com/problems/spiral-matrix/description/
+## 🔗 Problem Link
 
+<a href="https://leetcode.com/problems/spiral-matrix/description/" target="_blank">
 LeetCode 54: Spiral Matrix
+</a>
 
 
 ---
