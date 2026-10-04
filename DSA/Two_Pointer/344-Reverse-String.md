@@ -12,6 +12,7 @@ LeetCode 344: Reverse String
 
 - String
 - Two Pointers
+- Recursion
 - In-Place
 - Array
 
@@ -63,7 +64,7 @@ Output:
 
 ---
 
-## 🚀 Approach
+# 🚀 Approach 1 — Two Pointers
 
 Use the **Two Pointer** approach.
 
@@ -81,8 +82,6 @@ int i = 0;
 int j = s.length - 1;
 ```
 
----
-
 ### Step 2 — Swap Characters
 
 While:
@@ -99,8 +98,6 @@ s[i] = s[j];
 s[j] = temp;
 ```
 
----
-
 ### Step 3 — Move Pointers
 
 After swapping:
@@ -110,9 +107,7 @@ i++;
 j--;
 ```
 
-So both pointers move toward the center.
-
----
+Both pointers move toward the center.
 
 ### 🧠 Example
 
@@ -142,23 +137,17 @@ i++
 j--
 ```
 
-Next:
-
-```text
-e ↔ l
-```
-
 Continue until:
 
 ```text
 i >= j
 ```
 
-At that point, the string is completely reversed.
+The string is completely reversed.
 
 ---
 
-## 💻 Java Solution
+## 💻 Java Solution — Two Pointers
 
 ```java
 class Solution {
@@ -182,9 +171,170 @@ class Solution {
 
 ---
 
+# 🚀 Approach 2 — Recursion
+
+Use **Recursion + Two Pointers**.
+
+The logic is almost the same as the two-pointer approach.
+
+The difference is:
+
+> Instead of using a `while` loop to move toward the center, we use recursive calls.
+
+We pass:
+
+```text
+left  → beginning of the current range
+right → end of the current range
+```
+
+### Step 1 — Create a Recursive Helper
+
+```java
+private void reverse(char[] s, int left, int right)
+```
+
+The helper function reverses the portion:
+
+```text
+left ... right
+```
+
+### Step 2 — Base Case
+
+Stop when:
+
+```java
+left >= right
+```
+
+Why?
+
+Because the pointers have met or crossed, meaning the remaining portion is already reversed.
+
+```java
+if (left >= right) {
+    return;
+}
+```
+
+### Step 3 — Swap
+
+Swap the characters at `left` and `right`.
+
+```java
+char temp = s[left];
+s[left] = s[right];
+s[right] = temp;
+```
+
+### Step 4 — Recursive Call
+
+Move both pointers toward the center:
+
+```java
+reverse(s, left + 1, right - 1);
+```
+
+This repeats the same process for the smaller inner portion.
+
+### 🧠 Example
+
+For:
+
+```text
+["h", "e", "l", "l", "o"]
+```
+
+First call:
+
+```text
+left = 0
+right = 4
+```
+
+Swap:
+
+```text
+h ↔ o
+```
+
+Array:
+
+```text
+["o", "e", "l", "l", "h"]
+```
+
+Recursive call:
+
+```text
+reverse(s, 1, 3)
+```
+
+Swap:
+
+```text
+e ↔ l
+```
+
+Array:
+
+```text
+["o", "l", "l", "e", "h"]
+```
+
+Recursive call:
+
+```text
+reverse(s, 2, 2)
+```
+
+Now:
+
+```text
+left >= right
+```
+
+Stop.
+
+Final:
+
+```text
+["o", "l", "l", "e", "h"]
+```
+
+---
+
+## 💻 Java Solution — Recursion
+
+```java
+class Solution {
+    public void reverseString(char[] s) {
+        reverse(s, 0, s.length - 1);
+    }
+
+    private void reverse(char[] s, int left, int right) {
+
+        if (left >= right) {
+            return;
+        }
+
+        char temp = s[left];
+        s[left] = s[right];
+        s[right] = temp;
+
+        reverse(s, left + 1, right - 1);
+    }
+}
+```
+
+---
+
 ## ⏱️ Complexity Analysis
 
-### Time Complexity
+### Two Pointer
+
+**Time Complexity:**
 
 ```text
 O(n)
@@ -192,13 +342,39 @@ O(n)
 
 Each character is processed at most once.
 
-### Space Complexity
+**Space Complexity:**
 
 ```text
 O(1)
 ```
 
-Only one temporary variable is used for swapping.
+Only a temporary variable is used.
+
+---
+
+### Recursion
+
+**Time Complexity:**
+
+```text
+O(n)
+```
+
+Each recursive call processes one pair of characters.
+
+**Space Complexity:**
+
+```text
+O(n)
+```
+
+Because of the recursive call stack.
+
+More precisely:
+
+```text
+O(n / 2) = O(n)
+```
 
 ---
 
@@ -211,41 +387,63 @@ Only one temporary variable is used for swapping.
 
 ## 🌟 Key Points
 
-- Use **two pointers**.
-- One pointer starts from the left.
-- One pointer starts from the right.
-- Swap the characters.
-- Move both pointers toward the center.
+### Two Pointer
+
+- Start `left` from `0`.
+- Start `right` from `n - 1`.
+- Swap both characters.
+- Move:
+  ```text
+  left++
+  right--
+  ```
 - Stop when:
   ```text
-  i >= j
+  left >= right
   ```
-- The array is modified **in-place**.
-- No extra array is required.
+
+### Recursion
+
+- Same swapping logic.
+- Use a helper function.
+- Base case:
+  ```text
+  left >= right
+  ```
+- Recursive step:
+  ```text
+  left + 1
+  right - 1
+  ```
+- Recursion uses extra call-stack space.
 
 ---
 
 ## ⚠️ Common Mistakes
 
-- Using `i <= j` instead of `i < j`.
-- Forgetting to increment `i`.
-- Forgetting to decrement `j`.
+- Using `left > right` instead of `left >= right`.
+- Forgetting to move both pointers.
+- Forgetting the recursive call.
+- Calling recursion with the same `left` and `right`.
+- Forgetting that recursion uses stack space.
 - Creating another array unnecessarily.
-- Returning the array even though the method is `void`.
-- Confusing `s.length` with `s.length - 1` for the last index.
 
 ---
 
 ## 🎯 Interview Tip
 
-> **Reverse an array/string in-place → Two pointers + Swap.**
+> **Both approaches use the same core idea: Swap the outside characters and move toward the center.**
 
 ```text
-i →        ← j
+Two Pointer:
+while → swap → move
 
-Swap
- ↓
-i++       j--
- ↓
-Repeat until i >= j
+Recursion:
+base case → swap → recursive call
+```
+
+### Easy Memory Trick
+
+```text
+Reverse = Swap Outside → Move Inside
 ```
